@@ -1,3 +1,12 @@
+{{
+  config(
+    materialized = 'incremental',
+    unique_key= 'hash_key',
+    incremental_strategy= 'merge'
+    )
+}}
+
+
 select
     t.hash_key,
     t.block_number,
@@ -8,3 +17,8 @@ select
 
 from {{ ref('stg_btc') }} as t,
 LATERAL flatten(input => outputs) as f
+
+{%if is_incremental()%}
+    where block_timestamp >= (select max(block_timestamp) from {{this}})
+
+{%endif%}
