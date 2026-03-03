@@ -9,10 +9,25 @@ with cte_whale as(
     where value > 10
     group by address
 
+),
+latest_price as(
+    select
+        price
+
+
+    from {{ ref('btc_usd_max') }}
+    where cast(Replace(SNAPPED_AT,'UTC','') as date) = current_date()
+
+
+
+
 )
 
-
 select
-    *
-from cte_whale
-order by total_sent desc
+    w.address,
+    w.total_sent,
+    w.total_count,
+    l.price,
+    l.price * w.total_sent as total_amount
+from cte_whale as w
+cross join latest_price as l
