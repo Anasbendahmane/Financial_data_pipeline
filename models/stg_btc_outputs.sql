@@ -6,6 +6,7 @@
     )
 }}
 
+with cte_incremental as(
 
 select
     t.hash_key,
@@ -22,3 +23,15 @@ LATERAL flatten(input => outputs) as f
     where block_timestamp >= (select max(block_timestamp) from {{this}})
 
 {%endif%}
+
+
+)
+
+select 
+    hash_key,
+    block_number,
+    block_timestamp,
+    transcation_category,
+    address,
+    value
+from cte_incremental
