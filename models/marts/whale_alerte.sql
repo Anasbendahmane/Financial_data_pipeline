@@ -28,6 +28,6 @@ select
     w.total_sent,
     w.total_count,
     l.price,
-    l.price * w.total_sent as total_amount
+    {{convert_to_usd('w.total_sent','l.price')}} as total_amount
 from cte_whale as w
 cross join latest_price as l
